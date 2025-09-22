@@ -1,0 +1,19 @@
+import pandas as pd
+df = pd.read_csv(r"C:\Users\sushm\Downloads\marketing_campaign.csv", sep="\t")
+
+print("Missing values before cleaning:\n", df.isnull().sum())
+numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns
+df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].median())
+categorical_cols = df.select_dtypes(include=['object']).columns
+for col in categorical_cols:
+    df[col] = df[col].fillna(df[col].mode()[0])
+df = df.drop_duplicates()
+for col in categorical_cols:
+    df[col] = df[col].astype(str).str.strip().str.lower()
+df.columns = df.columns.str.lower().str.replace(r'\W+', '_', regex=True)
+
+output_path = "Mall_Customers_cleaned.csv"
+df.to_csv("Mall_Customers_cleaned.csv", index=False)
+print("\nShape after cleaning:", df.shape)
+# print("\nTop 5 Rows:\n", df.head())
+print(df)
